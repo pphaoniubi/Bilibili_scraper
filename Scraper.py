@@ -238,11 +238,4 @@ if __name__ == '__main__':
     duration = end_time-start_time
     print('total time spent {}'.format(duration))
 
-
-    """  
-    for aid in aid_list:
-        print('{} video in total of {} videos'.format(aid_list.index(aid),len(aid_list)))
-        CommentScraper(600, aid)
-    """
-
     
