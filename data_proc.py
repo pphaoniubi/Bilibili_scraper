@@ -25,16 +25,41 @@ def get_top_IP(outfile):
     plt.xlabel('省')
     plt.ylabel('人数')
     plt.legend()
-    plt.savefig('IP属地排名.png')
+    plt.savefig('{}_IP.png'.format(outfile.replace('.csv', '')))
     plt.close()
 
 
 
 
-def get_sex_stats():
-    """"""
+def get_sex_stats(outfile):
+    df = pd.read_csv(outfile)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签  # 指定默认字体
+    plt.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
+
+    labels = ['男', '女']
+    
+    sizes = df['性别'].value_counts()
+
+    total_count = sizes
+
+    print(sizes)
+
+
+    plt.figure(figsize=(6,6))
+
+    plt.pie(sizes, labels=labels, autopct = '%1.1f%%' )
+
+    plt.title('男女分布')
+    plt.axis('equal')
+    plt.legend()
+    plt.annotate(f'Total: {sizes}', xy=(-0.9, 1), fontsize=12, ha='center', va='center')
+    plt.savefig('{}_性别'.format(outfile.replace('.csv','')))
 
 
 
 if __name__ =='__main__':
     get_top_IP(outfile)
+    get_sex_stats(outfile)
+
+    
