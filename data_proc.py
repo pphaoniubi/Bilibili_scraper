@@ -41,8 +41,6 @@ def get_sex_stats(outfile):
     
     sizes = df['性别'].value_counts()
 
-    total_count = sizes
-
     print(sizes)
 
 
@@ -59,6 +57,7 @@ def get_sex_stats(outfile):
 
 
 if __name__ =='__main__':
+    outfile = '{}/{}.csv'.format('罗翔说刑法','罗翔说刑法')
     get_top_IP(outfile)
     get_sex_stats(outfile)
 
