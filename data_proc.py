@@ -39,7 +39,7 @@ def get_sex_stats(outfile):
 
     labels = ['男', '女']
     
-    sizes = df['性别'].value_counts()
+    sizes = df['性别'].value_counts().nlargest(2)
 
     print(sizes)
 
@@ -54,11 +54,22 @@ def get_sex_stats(outfile):
     plt.annotate(f'Total: {sizes}', xy=(-0.9, 1), fontsize=12, ha='center', va='center')
     plt.savefig('{}_性别'.format(outfile.replace('.csv','')))
 
+def get_popular_comments(outfile):
+    df = pd.read_csv(outfile)
+    df['点赞数'] = pd.to_numeric(df['点赞数'], errors='coerce', downcast='integer')
+    most_like = df.nlargest(10, '点赞数')
+    most_like.to_csv('{}/{}.csv'.format('罗翔说刑法','罗翔说刑法_like'), encoding = 'utf_8_sig')
+    print(most_like)
+    
+
 
 
 if __name__ =='__main__':
     outfile = '{}/{}.csv'.format('罗翔说刑法','罗翔说刑法')
     get_top_IP(outfile)
     get_sex_stats(outfile)
+    get_popular_comments(outfile)
+
+    #数据清洗
 
     
