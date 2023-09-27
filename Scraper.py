@@ -5,7 +5,7 @@ import random
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
-from data_proc import *
+
 
 
 def bv2av(bv):
@@ -214,25 +214,22 @@ def create_folder_file(name):
 
     return outfile
 
-#keyword = '帅soSerious'
-#outfile = '{}.csv'.format(keyword)
 
 
 
+folder_name = '宝剑嫂'
 if __name__ == '__main__':
     start_time = datetime.now()
-    outfile = create_folder_file('罗翔说刑法')
-    #aid_list = getAidBySearchKeyword(keyword)
-    comment_count_list = []
-
-
-    aid_list = get_up_main_page_vids('517327498', 'click', 50)
-
+    outfile = create_folder_file(folder_name)
     
+    aid_list = get_up_main_page_vids('113362335', 'click', 50)
 
     for aid in aid_list:
-        print('{} video in total of {} videos'.format(aid_list.index(aid),len(aid_list)))
+        print('{} video in total of {} videos'.format((aid_list.index(aid) + 1),len(aid_list)))
         CommentScraper(10000, aid)
+
+   
+    #CommentScraper(10000, bv2av('BV1Y94y1s7rY'))
 
     end_time = datetime.now()
     duration = end_time-start_time

@@ -6,9 +6,15 @@ import numpy as np
 from PIL import Image
 import jieba.analyse
 import matplotlib.dates as mdates
+from datetime import datetime
+
+from Scraper import folder_name
+
+#去重和去空值
+def data_cleaning():
+    """"""
 
 
-from Scraper import *
 
 def get_top_IP(outfile):
     df = pd.read_csv(outfile)
@@ -58,18 +64,23 @@ def get_popular_comments(outfile):
     df = pd.read_csv(outfile)
     df['点赞数'] = pd.to_numeric(df['点赞数'], errors='coerce', downcast='integer')
     most_like = df.nlargest(10, '点赞数')
-    most_like.to_csv('{}/{}.csv'.format('罗翔说刑法','罗翔说刑法_like'), encoding = 'utf_8_sig')
+    most_like.to_csv('{}_like.csv'.format(outfile.replace('.csv','')), encoding = 'utf_8_sig')
     print(most_like)
     
 
 
 
 if __name__ =='__main__':
-    outfile = '{}/{}.csv'.format('罗翔说刑法','罗翔说刑法')
+    start_time = datetime.now()
+    outfile = '{}/{}.csv'.format(folder_name,folder_name)
     get_top_IP(outfile)
     get_sex_stats(outfile)
     get_popular_comments(outfile)
 
     #数据清洗
 
-    
+    #统计总行数
+
+    end_time = datetime.now()
+
+    print(end_time - start_time)
