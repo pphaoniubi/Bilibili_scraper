@@ -33,11 +33,11 @@ def bv2av(bv):
     return aid
 
 
-def CommentScraper(max_page, aid):
+def CommentScraper(max_page, aid, not_200_count):
         
     try:
         headers = {
-            'cookie': "buvid3=09397691-5EF8-4E68-AADA-3B6C5A07761E95551infoc; b_nut=1695443895; i-wanna-go-back=-1; b_ut=7; _uuid=9210C1B94-62AE-CAF9-6A88-13F1D2365FD1095659infoc; buvid_fp=e1d49a94d93bd51e7b7a2cf02039fc66; home_feed_column=5; buvid4=00D6E1BD-A864-F4D3-2DE3-144055B9DF2C35615-023090402-YPxCscKgwWAVEdO1g+wBLA%3D%3D; CURRENT_FNVAL=4048; rpdid=|(uuul)luJ|~0J'uYmlRRJmuJ; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTU3MDMxMTUsImlhdCI6MTY5NTQ0Mzg1NSwicGx0IjotMX0.cgUA08z29O7R_hh99RbR--D6Z62hNpGQXF8abfd0iQE; bili_ticket_expires=1695703055; CURRENT_QUALITY=80; DedeUserID=386411344; DedeUserID__ckMd5=64519e7af412cb8f; SESSDATA=f3b0064d%2C1710996455%2C28418%2A91CjAigqaI88fpZnRUc80sWfpYZ4S3lvYxnQvJsq0rgrF5e2naCmB0hmfmgEcnBu4DmDUSVkJULTA0WElpMmRXcDFuNnRzTWcybjNhOGpiMXpBekJkdG51NXVBNG9WR3hXNmUzMXVGSUo4OXVzci1kQXY2WEo2VnBUSl9RdDBqUTRUSVVzby1NeE5BIIEC; bili_jct=fbdefa1b4e0f914ec2d0ac7251cb4c87; header_theme_version=CLOSE; bp_video_offset_386411344=844469031123550241; sid=4h5gmcc3; bsource=search_google; browser_resolution=1658-878; PVID=4; b_lsid=94BAD103A_18AC83EF40D",
+            'cookie': "buvid3=09397691-5EF8-4E68-AADA-3B6C5A07761E95551infoc; b_nut=1695443895; i-wanna-go-back=-1; b_ut=7; _uuid=9210C1B94-62AE-CAF9-6A88-13F1D2365FD1095659infoc; rpdid=|(uuul)luJ|~0J'uYmlRRJmuJ; CURRENT_QUALITY=80; header_theme_version=CLOSE; buvid4=00D6E1BD-A864-F4D3-2DE3-144055B9DF2C35615-023090402-YPxCscKgwWAVEdO1g%2BwBLA%3D%3D; buvid_fp_plain=undefined; CURRENT_FNVAL=4048; enable_web_push=DISABLE; bp_video_offset_386411344=854848068439244839; fingerprint=7e03fc6d0218c9889f67ca92295e08a0; buvid_fp=7e03fc6d0218c9889f67ca92295e08a0; home_feed_column=5; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTkzMjMwNTAsImlhdCI6MTY5OTA2Mzc5MCwicGx0IjotMX0.3fcR5n-lZSDQeEGRY4lBiLleRzNG8Qjj5Mf1zH2P_zk; bili_ticket_expires=1699322990; SESSDATA=5ba2a029%2C1714615886%2C54771%2Ab1CjB2bPU06YLQ_lJsDIoqYFcPoSzXImJDfffhAun0djRutgUFLBFL-ysSoWDcR-3YiuMSVl9JTlFKc2VMZ0JFM0U3MnRNa042SDZZMGRxc2p6NGNiLVQ2T1FucW5GZTFLMTFhaHdyUTVTOTh4ZGRlZ196U1hLb2JFWjI2cGJ6ekppWWZmQmZVbzdBIIEC; bili_jct=626631467a6dec1b614ab10ec6ef1af3; DedeUserID=3546572270864807; DedeUserID__ckMd5=d2297fde3473dfcd; sid=4gp79oof; bp_video_offset_3546572270864807=860377941931982964; browser_resolution=1498-927; b_lsid=9104E9D19_18BA212001F; PVID=3",
         }
 
         for i in range(max_page):
@@ -49,11 +49,10 @@ def CommentScraper(max_page, aid):
             like_list = []
             is_main = []
 
-            time.sleep(random.uniform(0,0.8))         #wait randomly to avoid being detected
+            time.sleep(random.uniform(0,0.7))         
             url = 'https://api.bilibili.com/x/v2/reply?&jsonp=jsonp&pn={}&type=1&oid={}&sort=2'.format(i , aid)
 
             response = requests.get(url=url, headers=headers)
-
             
             #create storing data list
 
@@ -136,12 +135,14 @@ def CommentScraper(max_page, aid):
             else:
                 header=True
 
+
             df.to_csv(outfile, mode = 'a+', encoding = 'utf_8_sig', index = False, header = header)
 
     except Exception as e:
         print('error taking place in video: {}'.format(aid))
         print(e)
-
+        if response.status_code != 200:
+                not_200_count = not_200_count + 1
 
 def getAidBySearchKeyword(keyword):
     create_folder_file(keyword)
@@ -188,6 +189,7 @@ def get_up_main_page_vids(uid, order, max_page):
             response = requests.get(url=url, headers=headers)
             print(response)
 
+
             video_list = response.json()['data']['list']['vlist']
 
             if video_list is None or len(video_list) == 0:
@@ -203,8 +205,37 @@ def get_up_main_page_vids(uid, order, max_page):
 
     return aid_list
 
-def get_video_danmuku(aid):
-    """"""
+def get_up_fans(uid, max_page, outfile):
+    headers = {
+        'cookie' : "buvid3=09397691-5EF8-4E68-AADA-3B6C5A07761E95551infoc; b_nut=1695443895; i-wanna-go-back=-1; b_ut=7; _uuid=9210C1B94-62AE-CAF9-6A88-13F1D2365FD1095659infoc; rpdid=|(uuul)luJ|~0J'uYmlRRJmuJ; CURRENT_QUALITY=80; DedeUserID=386411344; DedeUserID__ckMd5=64519e7af412cb8f; SESSDATA=f3b0064d%2C1710996455%2C28418%2A91CjAigqaI88fpZnRUc80sWfpYZ4S3lvYxnQvJsq0rgrF5e2naCmB0hmfmgEcnBu4DmDUSVkJULTA0WElpMmRXcDFuNnRzTWcybjNhOGpiMXpBekJkdG51NXVBNG9WR3hXNmUzMXVGSUo4OXVzci1kQXY2WEo2VnBUSl9RdDBqUTRUSVVzby1NeE5BIIEC; bili_jct=fbdefa1b4e0f914ec2d0ac7251cb4c87; header_theme_version=CLOSE; buvid4=00D6E1BD-A864-F4D3-2DE3-144055B9DF2C35615-023090402-YPxCscKgwWAVEdO1g%2BwBLA%3D%3D; fingerprint=e1d49a94d93bd51e7b7a2cf02039fc66; buvid_fp_plain=undefined; buvid_fp=e1d49a94d93bd51e7b7a2cf02039fc66; CURRENT_FNVAL=4048; enable_web_push=DISABLE; home_feed_column=5; bp_video_offset_386411344=854848068439244839; PVID=4; b_lsid=D732EFF10_18B57B4A07A; browser_resolution=1484-872; sid=7phk94c0; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTgyNDI3NjYsImlhdCI6MTY5Nzk4MzUwNiwicGx0IjotMX0.FhbdAFFZ1S-vlcRwMxV4-DHobNrsJRWQ3QaHvBAtlXA; bili_ticket_expires=1698242706",
+        'user-agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
+    }
+    time_list = []
+    for i in range(max_page):
+
+        time.sleep(random.uniform(0,0.5)) 
+        
+        url = "https://api.bilibili.com/x/relation/fans?vmid={}&pn={}&ps=20&order=desc&gaia_source=main_web&web_location=333.999&w_rid=55155342fffdf15cadf76cad7110f5bf&wts=1697987324".format(uid,i)
+
+        response = requests.get(url=url, headers=headers)
+
+        data = response.json()['data']['list']
+
+        print('page: {} # of fans: {} response: {}'.format(i+1, len(data),response.status_code))
+        for fan in data:
+            time_list.append(datetime.fromtimestamp(fan['mtime']))
+
+        df = pd.DataFrame({
+                '时间': time_list,
+            })
+
+        if os.path.exists(outfile):
+            header = False
+        else:
+            header=True
+
+
+        df.to_csv(outfile, mode = 'a+', encoding = 'utf_8_sig', index = False, header = header)
 
 def create_folder_file(name):
     Path(name).mkdir()
@@ -217,22 +248,25 @@ def create_folder_file(name):
 
 
 
-folder_name = '宝剑嫂'
+folder_name = 'BV1ru4y147fkc'
 if __name__ == '__main__':
     start_time = datetime.now()
     outfile = create_folder_file(folder_name)
+    not_200_count = 0
     
-    aid_list = get_up_main_page_vids('113362335', 'click', 50)
-
+    """
+    aid_list = get_up_main_page_vids('207702731', 'click', 20)
     for aid in aid_list:
         print('{} video in total of {} videos'.format((aid_list.index(aid) + 1),len(aid_list)))
-        CommentScraper(10000, aid)
-
+        CommentScraper(10000, aid, not_200_count)
+    """
    
-    #CommentScraper(10000, bv2av('BV1Y94y1s7rY'))
+    CommentScraper(10000, bv2av(folder_name), not_200_count)
+
+    #get_up_fans('111082383', 1000000, "马林思维粉丝")
 
     end_time = datetime.now()
     duration = end_time-start_time
     print('total time spent {}'.format(duration))
-
-    
+    print('Response failed: ')
+    print(not_200_count)
